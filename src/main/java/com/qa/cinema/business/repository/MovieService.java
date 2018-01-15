@@ -8,18 +8,21 @@ import javax.persistence.TypedQuery;
 import javax.transaction.*;
 
 import com.qa.cinema.movie.Movie;
+import com.qa.cinema.util.JSONUtil;
 
 @Transactional(Transactional.TxType.SUPPORTS)
 public class MovieService {
 	@PersistenceContext (unitName = "primary")
 	private EntityManager em;
 	
+	private JSONUtil jsonUtil = new JSONUtil();
+	
 	public Movie findMovie(Long id) {
 		return em.find(Movie.class, id);
 	}
 	
 	public List<Movie> findAllMovies() {
-		TypedQuery<Movie> query = em.createQuery("SELECT * FROM Movie",Movie.class);
+		TypedQuery<Movie> query = em.createQuery("SELECT m FROM Movie m order by m.title",Movie.class);
 		return query.getResultList();
 	}
 	
@@ -30,15 +33,16 @@ public class MovieService {
     }
 	
 	@Transactional(Transactional.TxType.REQUIRED)
-    public Movie delete(Movie movie) {
-        em.remove(movie);
-        return movie;
+    public String delete(long id) {
+        em.remove(findMovie(id));
+        return "mooooovie deleted";
     }
 	
 	@Transactional(Transactional.TxType.REQUIRED)
-    public Movie update(Movie movie) {
-        em.merge(movie);
-        return movie;
+    public String update(String movie) {
+		Movie newMovie = jsonUtil.getObjectForJSON(movie, Movie.class);
+        em.merge(newMovie);
+        return "updated";
     }
 
 

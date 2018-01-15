@@ -44,4 +44,8 @@ public class Movie {
 		this.ageRating = ageRating;
 	}
 	
+	public Movie() {
+		
+	}
+	
 }
